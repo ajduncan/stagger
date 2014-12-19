@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # setup.py
 # From the stagger project: http://code.google.com/p/stagger/
@@ -30,16 +30,14 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-  
-import distribute_setup
-distribute_setup.use_setuptools()
+
 
 from setuptools import setup;
 
 setup(
     name="stagger",
-    version="0.4.2",
-    url="http://code.google.com/p/stagger",
+    version="0.4.3",
+    url="https://github.com/ajduncan/stagger",
     author="Karoly Lorentey",
     author_email="karoly@lorentey.hu",
     packages=["stagger"],
