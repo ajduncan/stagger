@@ -4,6 +4,23 @@ Stagger is a BSD licensed ID3v1/ID3v2 tag manipulation package written in pure P
 
 The ID3v2 tag format is notorious for its useless specification documents and its quirky, mutually incompatible part-implementations. Stagger is to provide a robust tagging package that is able to handle all the various badly formatted tags out there and allow you to convert them to a consensus format.
 
+## Usage ##
+
+>>> import stagger
+>>> form stagger.id3 import *       # contains ID3 frame types
+
+>>> tag = stagger.read_tag("track01.mp3")          
+
+>>> tag[TIT2]                                      # tag is a MutableMapping
+TIT2(utf-8 "Staralfur")
+
+>>> tag[TIT2] = TIT2(text="The Show Must Go On")   # Explicit constructor
+>>> tag[TIT2] = "The Show Must Go On"              # Implicit constructor
+>>> tag[TIT2] = ("Foo", "Bar", "Baz")              # Multiple strings
+>>> tag.title = "The Battle of Evermore"           # Alternative, friendlier API
+
+>>> tag.write()
+
 ## Developing ##
 
 Make sure you have python3 installed, create a virtual environment e.g.;
