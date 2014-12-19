@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+script:  python -m test.alltests
+notifications:
+  on_success: change
+  on_failure: change
+  email:
+    - ajduncan@gmail.com
