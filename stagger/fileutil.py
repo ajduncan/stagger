@@ -4,19 +4,19 @@
 #
 # Copyright (c) 2009-2011 Karoly Lorentey  <karoly@lorentey.hu>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
-# 
+#
 # - Redistributions of source code must retain the above copyright
 #   notice, this list of conditions and the following disclaimer.
-# 
+#
 # - Redistributions in binary form must reproduce the above copyright
 #   notice, this list of conditions and the following disclaimer in
 #   the documentation and/or other materials provided with the
 #   distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -40,6 +40,7 @@ import signal
 
 from contextlib import contextmanager
 
+
 def xread(file, length):
     "Read exactly length bytes from file; raise EOFError if file ends sooner."
     data = file.read(length)
@@ -47,23 +48,25 @@ def xread(file, length):
         raise EOFError
     return data
 
+
 @contextmanager
 def opened(filename, mode):
     "Open filename, or do nothing if filename is already an open file object"
     if isinstance(filename, str):
         file = open(filename, mode)
-        try: 
+        try:
             yield file
-        finally: 
+        finally:
             if not file.closed:
                 file.close()
     else:
         yield filename
 
+
 @contextmanager
 def suppress_interrupt():
     """Suppress KeyboardInterrupt exceptions while the context is active.
-    
+
     The suppressed interrupt (if any) is raised when the context is exited.
     """
     interrupted = False
@@ -71,7 +74,7 @@ def suppress_interrupt():
     def sigint_handler(signum, frame):
         nonlocal interrupted
         interrupted = True
-    
+
     s = signal.signal(signal.SIGINT, sigint_handler)
     try:
         yield None
@@ -79,6 +82,7 @@ def suppress_interrupt():
         signal.signal(signal.SIGINT, s)
     if interrupted:
         raise KeyboardInterrupt()
+
 
 def replace_chunk(filename, offset, length, chunk, in_place=True, max_mem=5):
     """Replace length bytes of data with chunk, starting at offset.
@@ -101,6 +105,7 @@ def replace_chunk(filename, offset, length, chunk, in_place=True, max_mem=5):
     with suppress_interrupt():
         _replace_chunk(filename, offset, length, chunk, in_place, max_mem)
 
+
 def _replace_chunk(filename, offset, length, chunk, in_place, max_mem):
     assert isinstance(filename, str) or in_place
     with opened(filename, "rb+") as file:
@@ -122,8 +127,9 @@ def _replace_chunk(filename, offset, length, chunk, in_place, max_mem):
             return
 
         if in_place:
-            _replace_chunk_in_place(file, offset, length, chunk, oldsize, newsize)
-        else: # not in_place
+            _replace_chunk_in_place(
+                file, offset, length, chunk, oldsize, newsize)
+        else:  # not in_place
             temp = tempfile.NamedTemporaryFile(dir=os.path.dirname(filename),
                                                prefix="stagger-",
                                                suffix=".tmp",
@@ -152,6 +158,7 @@ def _copy_chunk(src, dst, length):
         dst.write(buf)
         length -= l
 
+
 def _replace_chunk_in_place(file, offset, length, chunk, oldsize, newsize):
     if newsize > oldsize:
         file.seek(0, 2)
@@ -161,8 +168,8 @@ def _replace_chunk_in_place(file, offset, length, chunk, oldsize, newsize):
         import mmap
         m = mmap.mmap(file.fileno(), max(oldsize, newsize))
         try:
-            m.move(offset + len(chunk), 
-                   offset + length, 
+            m.move(offset + len(chunk),
+                   offset + length,
                    oldsize - offset - length)
             m[offset:offset + len(chunk)] = chunk
         finally:
@@ -172,7 +179,7 @@ def _replace_chunk_in_place(file, offset, length, chunk, oldsize, newsize):
         # and construct the result from there.
         file.seek(offset + length)
         temp = tempfile.SpooledTemporaryFile(
-            max_size=max_mem * (1<<20),
+            max_size=max_mem * (1 << 20),
             prefix="stagger-",
             suffix=".tmp")
         try:

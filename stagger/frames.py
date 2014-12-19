@@ -4,19 +4,19 @@
 #
 # Copyright (c) 2009-2011 Karoly Lorentey  <karoly@lorentey.hu>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
-# 
+#
 # - Redistributions of source code must retain the above copyright
 #   notice, this list of conditions and the following disclaimer.
-# 
+#
 # - Redistributions in binary form must reproduce the above copyright
 #   notice, this list of conditions and the following disclaimer in
 #   the documentation and/or other materials provided with the
 #   distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -41,11 +41,12 @@ from warnings import warn
 from stagger.errors import *
 from stagger.specs import *
 
+
 class Frame(metaclass=abc.ABCMeta):
     _framespec = tuple()
     _version = tuple()
     _allow_duplicates = False
-    
+
     def __init__(self, frameid=None, flags=None, frameno=None, **kwargs):
         self.frameid = frameid if frameid else type(self).__name__
         self.flags = flags if flags else set()
@@ -68,7 +69,7 @@ class Frame(metaclass=abc.ABCMeta):
                 and self.frameid == other.frameid
                 and self.flags == other.flags
                 and self._framespec == other._framespec
-                and all(getattr(self, spec.name, None) == 
+                and all(getattr(self, spec.name, None) ==
                         getattr(other, spec.name, None)
                         for spec in self._framespec))
 
@@ -114,7 +115,7 @@ class Frame(metaclass=abc.ABCMeta):
         "Returns true if this frame is in any of the specified versions of ID3."
         for version in versions:
             if (self._version == version
-                or (isinstance(self._version, collections.Container) 
+                or (isinstance(self._version, collections.Container)
                     and version in self._version)):
                 return True
         return False
@@ -126,7 +127,7 @@ class Frame(metaclass=abc.ABCMeta):
             return self._v2_frame._from_frame(self)
         if self._in_version(2):
             base = type(self).__bases__[0]
-            if issubclass(base, Frame) and base._in_version(version): 
+            if issubclass(base, Frame) and base._in_version(version):
                 return base._from_frame(self)
         raise IncompatibleFrameError("Frame {0} cannot be converted "
                                      "to ID3v2.{1} format".format(self.frameid, version))
@@ -134,9 +135,9 @@ class Frame(metaclass=abc.ABCMeta):
     def _encode(self, encodings=("latin-1", "utf-16")):
         # if getattr(self, "_bozo", False):
         #     warn("{0}: Frame type is not widely implemented, "
-        #          "its use is discouraged".format(self.frameid), 
+        #          "its use is discouraged".format(self.frameid),
         #          BozoFrameWarning)
-        
+
         def encode_fields():
             data = bytearray()
             for spec in self._framespec:
@@ -165,7 +166,7 @@ class Frame(metaclass=abc.ABCMeta):
         else:
             try:
                 # Try specified encoding before others
-               return encode_fields()
+                return encode_fields()
             except UnicodeEncodeError:
                 return try_preferred_encodings()
 
@@ -181,12 +182,13 @@ class Frame(metaclass=abc.ABCMeta):
                 data = getattr(self, spec.name)
                 if isinstance(data, (bytes, bytearray)):
                     args.append("{0}=<{1} bytes of binary data {2!r}{3}>".format(
-                            spec.name, len(data), 
-                            data[:20], "..." if len(data) > 20 else ""))
+                        spec.name, len(data),
+                        data[:20], "..." if len(data) > 20 else ""))
                 else:
                     args.append(repr(data))
             else:
-                args.append("{0}={1!r}".format(spec.name, getattr(self, spec.name)))
+                args.append(
+                    "{0}={1!r}".format(spec.name, getattr(self, spec.name)))
         return "{0}({1})".format(stype, ", ".join(args))
 
     def _spec(self, name):
@@ -199,24 +201,28 @@ class Frame(metaclass=abc.ABCMeta):
     def _str_fields(self):
         fields = []
         # Determine how many fields to show
-        cutoff = max(i for i in range(len(self._framespec)) 
-                     if i == 0 # don't call max with an the empty sequence
-                     or not self._framespec[i]._optional 
+        cutoff = max(i for i in range(len(self._framespec))
+                     if i == 0  # don't call max with an the empty sequence
+                     or not self._framespec[i]._optional
                      or getattr(self, self._framespec[i].name, None) is not None)
         for spec in self._framespec[:cutoff + 1]:
             fields.append("{0}={1}"
-                          .format(spec.name, 
+                          .format(spec.name,
                                   repr(spec.to_str(getattr(self, spec.name, None)))))
         return ", ".join(fields)
-        
+
     def __str__(self):
         flag = " "
-        if "unknown" in self.flags: flag = "?"
-        if isinstance(self, ErrorFrame): flag = "!"
+        if "unknown" in self.flags:
+            flag = "?"
+        if isinstance(self, ErrorFrame):
+            flag = "!"
         return "{0}{1}({2})".format(flag, self.frameid, self._str_fields())
+
 
 class UnknownFrame(Frame):
     _framespec = (BinaryDataSpec("data"),)
+
 
 class ErrorFrame(Frame):
     _framespec = (BinaryDataSpec("data"),)
@@ -232,8 +238,8 @@ class ErrorFrame(Frame):
             strs.append(str(self.exception))
         strs.append(repr(self.data))
         return ", ".join(strs)
-    
-    
+
+
 class TextFrame(Frame):
     _framespec = (EncodingSpec("encoding"),
                   SequenceSpec("text", EncodedStringSpec("text")))
@@ -250,7 +256,8 @@ class TextFrame(Frame):
                         yield v
             else:
                 raise ValueError("Invalid text frame value")
-        super().__init__(frameid=frameid, flags=flags, frameno=frameno, **kwargs)
+        super().__init__(
+            frameid=frameid, flags=flags, frameno=frameno, **kwargs)
         self.text.extend(list(extract_strs(values)))
 
     @classmethod
@@ -264,14 +271,14 @@ class TextFrame(Frame):
             warn("{0}: Stripped {1} empty strings from end of frame"
                  .format(frameid, count), FrameWarning)
         if len(frame.text) == 0 or sum(len(t) for t in frame.text) == 0:
-            warn("{0}: Ignoring empty text frame".format(frameid), 
+            warn("{0}: Ignoring empty text frame".format(frameid),
                  EmptyFrameWarning)
             return None
         return frame
 
     def _str_fields(self):
         return ", ".join(repr(t) for t in self.text)
-#        return "{0} {1}".format((EncodedStringSpec._encodings[self.encoding][0] 
+#        return "{0} {1}".format((EncodedStringSpec._encodings[self.encoding][0]
 #                                if self.encoding is not None else "<undef>"),
 #                                ", ".join(repr(t) for t in self.text))
 
@@ -294,10 +301,13 @@ class TextFrame(Frame):
             res.encoding = enc
         return [res]
 
+
 class URLFrame(Frame):
     _framespec = (URLStringSpec("url"), )
+
     def _str_fields(self):
         return repr(self.url)
+
 
 class CreditsFrame(Frame):
     _framespec = (EncodingSpec("encoding"),
@@ -305,9 +315,12 @@ class CreditsFrame(Frame):
                             EncodedStringSpec("involvement"),
                             EncodedStringSpec("person")))
 
+
 class PictureFrame(Frame):
+
     def __init__(self, value=None, frameid=None, flags=None, frameno=None, **kwargs):
-        super().__init__(frameid=frameid, flags=flags, frameno=frameno, **kwargs)
+        super().__init__(
+            frameid=frameid, flags=flags, frameno=frameno, **kwargs)
         if value is not None:
             with open(value, "rb") as file:
                 self.data = file.read()
@@ -317,10 +330,11 @@ class PictureFrame(Frame):
                 if not format:
                     format = value.rpartition(".")[2]
                 self._set_format(format)
-    
+
     @abstractmethod
     def _set_format(self, format):
         pass
+
 
 def is_frame_class(cls):
     return (isinstance(cls, type)

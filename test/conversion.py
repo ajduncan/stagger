@@ -5,19 +5,19 @@
 #
 # Copyright (c) 2009-2011 Karoly Lorentey  <karoly@lorentey.hu>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
-# 
+#
 # - Redistributions of source code must retain the above copyright
 #   notice, this list of conditions and the following disclaimer.
-# 
+#
 # - Redistributions in binary form must reproduce the above copyright
 #   notice, this list of conditions and the following disclaimer in
 #   the documentation and/or other materials provided with the
 #   distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -39,7 +39,9 @@ import warnings
 from stagger.errors import *
 from stagger.conversion import *
 
+
 class ConversionTestCase(unittest.TestCase):
+
     def random_data(self, length=100):
         for i in range(length):
             r = random.randint(0, 10)
@@ -53,7 +55,7 @@ class ConversionTestCase(unittest.TestCase):
     def testUnsync(self):
         def contains_sync(data):
             for i in range(len(data) - 1):
-                if data[i] == 255 and data[i+1] & 0xE0:
+                if data[i] == 255 and data[i + 1] & 0xE0:
                     return True
 
         self.assertEqual(Unsync.encode(b"\x00\xFF\x00\xFF\xD0\xFF"),
@@ -67,7 +69,7 @@ class ConversionTestCase(unittest.TestCase):
             self.assertFalse(contains_sync(e))
             self.assertTrue(Unsync.decode(e) == r)
 
-    def testUnsyncReader(self): 
+    def testUnsyncReader(self):
         for i in range(20):
             r = bytes(self.random_data(100))
             e = Unsync.encode(r)
@@ -82,7 +84,7 @@ class ConversionTestCase(unittest.TestCase):
         self.assertEqual(Syncsafe.encode(1, width=2), b"\x00\x01")
         self.assertEqual(Syncsafe.encode(128, width=2), b"\x01\x00")
         self.assertEqual(Syncsafe.encode(130, width=2), b"\x01\x02")
-        
+
         self.assertEqual(Syncsafe.decode(b"\x01"), 1)
         self.assertEqual(Syncsafe.decode(b"\x7F"), 127)
         self.assertRaises(ValueError, Syncsafe.decode, b"\xFF")
@@ -106,7 +108,7 @@ class ConversionTestCase(unittest.TestCase):
         self.assertEqual(Int8.encode(1, width=2), b"\x00\x01")
         self.assertEqual(Int8.encode(128, width=2), b"\x00\x80")
         self.assertEqual(Int8.encode(258, width=2), b"\x01\x02")
-        
+
         self.assertEqual(Int8.decode(b"\x01"), 1)
         self.assertEqual(Int8.decode(b"\x00\x01"), 1)
         self.assertEqual(Int8.decode(b"\x7F"), 127)
