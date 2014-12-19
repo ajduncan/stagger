@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # commandline.py
 # From the stagger project: http://code.google.com/p/stagger/

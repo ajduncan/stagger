@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # samples.py
 # From the stagger project: http://code.google.com/p/stagger/

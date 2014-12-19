@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # id3v1.py
 # From the stagger project: http://code.google.com/p/stagger/
@@ -73,7 +73,7 @@ import warnings
 from stagger.errors import *
 import stagger.id3v1
 
-testsuite_url = r"http://www.id3.org/Developer_Information?action=AttachFile&do=get&target=id3v1_test_suite.tar.gz"
+testsuite_url = r"http://id3.org/Developer%20Information?action=AttachFile&do=get&target=id3v1_test_suite.tar.gz"
 testsuite_file = os.path.join(os.path.dirname(__file__), "id3v1_test_suite.tar.gz")
 
 testsuite_log = "id3v1/generation.log"

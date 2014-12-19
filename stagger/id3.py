@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # id3.py
 # From the stagger project: http://code.google.com/p/stagger/
 #

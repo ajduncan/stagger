@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # errors.py
 # From the stagger project: http://code.google.com/p/stagger/
 #

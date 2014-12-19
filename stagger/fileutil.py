@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # fileutil.py
 # From the stagger project: http://code.google.com/p/stagger/
 #

@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # util.py
 # From the stagger project: http://code.google.com/p/stagger/
 #
