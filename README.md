@@ -6,6 +6,7 @@ The ID3v2 tag format is notorious for its useless specification documents and it
 
 ## Usage ##
 
+```
 >>> import stagger
 >>> form stagger.id3 import *       # contains ID3 frame types
 
@@ -20,6 +21,7 @@ TIT2(utf-8 "Staralfur")
 >>> tag.title = "The Battle of Evermore"           # Alternative, friendlier API
 
 >>> tag.write()
+```
 
 ## Developing ##
 
