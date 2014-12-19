@@ -1,2 +1,4 @@
 *.py[co]
 .env
+stagger.egg-info
+id3v1_test_suite.tar.gz
