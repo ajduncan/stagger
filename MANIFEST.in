@@ -1,7 +1,6 @@
 include *.txt
-include README
+include README.md
 include LICENSE
-include AUTHORS
-include ChangeLog
+include AUTHORS.md
 include test/*.py
 include test/samples/*.id3
